@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.EmployeeDao;
-import com.example.demo.model.Emoloyee;
+import com.example.demo.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,28 +15,27 @@ public class EmployeeService {
     private final EmployeeDao employeeDao;
 
     @Autowired
-    public EmployeeService(@Qualifier("postgres") EmployeeDao employeeDao) {
+    public EmployeeService(@Qualifier("dataBaseAccess") EmployeeDao employeeDao) {
         this.employeeDao = employeeDao;
     }
 
-    public int addEmployee(Emoloyee emoloyee){
-        return employeeDao.insertEmployee(emoloyee);
+    public void addEmployee(Employee employee){
+        employeeDao.insertEmployee(employee);
     }
 
-    public List<Emoloyee> getAll(){
+    public List<Employee> getAll(){
         return employeeDao.selectAll();
     }
 
-    public Optional<Emoloyee> getEmployeeById(UUID id){
+    public Optional<Employee> getEmployeeById(int id){
         return employeeDao.selectEmployee(id);
     }
 
-    public int deleteEmployee(UUID id) {
+    public int deleteEmployee(int id) {
         return employeeDao.deleteEmployee(id);
     }
 
-    public int updateEmployee(UUID id, Emoloyee newEmployee){
-        Object employee1;
+    public int updateEmployee(int id, Employee newEmployee){
         return employeeDao.updateEmployee(id, newEmployee);
     }
 }

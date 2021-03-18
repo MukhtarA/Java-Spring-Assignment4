@@ -1,58 +1,57 @@
 package com.example.demo.dao;
 
-import com.example.demo.model.Emoloyee;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import com.example.demo.model.Employee;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository("postgres")
+@Repository("dataBaseAccess")
 public class EmployeeDataAccess implements EmployeeDao {
+    private static List<Employee> DB = new ArrayList<>();
 
-    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public EmployeeDataAccess(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Override
+    public int insertEmployee(int id, Employee employee) {
+        DB.add(new Employee(id, employee.getFullName(), employee.getSalary(),
+                employee.getHours(), employee.getPassedHours(), employee.getCommission(), employee.getEmployeeType()));
+        return 1;
     }
 
     @Override
-    public int insertEmployee(UUID id, Emoloyee emoloyee) {
-        return 0;
+    public List<Employee> selectAll() {
+        return DB;
     }
 
     @Override
-    public List<Emoloyee> selectAll() {
-        String sql = "SELECT id, name FROM employee";
-        return jdbcTemplate.query(sql, (resultSet, i) -> {
-            UUID id = UUID.fromString(resultSet.getString("id"));
-            String name = resultSet.getString("fullName");
-            return new Emoloyee(id, name);
-        });
+    public Optional<Employee> selectEmployee(int id) {
+        return Optional.ofNullable(DB.stream().filter(employee -> id == employee.getId()).findFirst().orElse(null));
     }
 
     @Override
-    public Optional<Emoloyee> selectEmployee(UUID id) {
-        final String sql = "SELECT id, name FROM employee WHERE id = ?";
-
-        Emoloyee emoloyee = jdbcTemplate.queryForObject(sql, new Object[]{id}, (resultSet, i) -> {
-            UUID personId = UUID.fromString(resultSet.getString("id"));
-            String name = resultSet.getString("fullName");
-            return new Emoloyee(personId, name);
-        });
-        return Optional.ofNullable(emoloyee);
+    public int deleteEmployee(int id) {
+        Optional<Employee> emp = selectEmployee(id);
+        if(emp.isEmpty()){
+            return 0;
+        }
+        DB.remove(emp.get());
+        return 1;
     }
 
     @Override
-    public int deleteEmployee(UUID id) {
-        return 0;
-    }
+    public int updateEmployee(int id, Employee employee) {
 
-    @Override
-    public int updateEmployee(UUID id, Emoloyee emoloyee) {
-        return 0;
+        return selectEmployee(id).map(emp -> {
+            int indexOfEmp = DB.indexOf(emp);
+            if(indexOfEmp >= 0){
+                DB.set(indexOfEmp , new Employee(id, employee.getFullName(),
+                        employee.getSalary(), employee.getHours(),
+                        employee.getPassedHours(), employee.getCommission(), employee.getEmployeeType()));
+                return 1;
+            }
+            return 0;
+        }).orElse(0);
     }
 }

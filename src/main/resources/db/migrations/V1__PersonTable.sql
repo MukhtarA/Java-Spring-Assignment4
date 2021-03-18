@@ -1,4 +1,0 @@
-CREATE TABLE employee(
-    id UUID NOT NULL PRIMARY,
-    fullName VARCHAR(100) NOT NULL
-)

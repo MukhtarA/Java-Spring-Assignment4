@@ -1,6 +1,6 @@
 app:
   datasource:
-    jdbs-url: jdbs:postgresql://localhost:5432/Assignment1
-    username: root
-    password: root
+    jdbs-url: jdbc:postgresql://localhost:5430/postgres
+    username: m1
+    password: qwerty
     pool-size: 30
